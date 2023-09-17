@@ -40,7 +40,7 @@ python manage.py runserver
 You can make requests like this:
 ```bash
  curl -X POST -H "Content-type: application/json" -H "Accept: application/json" -d '{
-    "username": "your username>",
+    "username": "your username",
     "password": "your password",
     "start_date": "2023-03-15",
     "end_date": "2023-09-17"
