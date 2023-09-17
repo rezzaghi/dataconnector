@@ -9,6 +9,6 @@ __pycache__/
 *.pyo
 *.log
 *.sqlite3
-local_settings.py  # If you use this for local development settings
-media/  # Uploaded media files
-static/  # Collected static files
+local_settings.py
+media/
+static/
