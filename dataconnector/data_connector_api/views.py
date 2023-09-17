@@ -9,7 +9,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Transaction
 from .utils import convert_date_time_format
-from django.utils import timezone
 
 def login_to_wallstreetsurvivor(username, password):
     session = requests.Session()
