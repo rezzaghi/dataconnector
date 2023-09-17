@@ -7,7 +7,9 @@ import requests
 from bs4 import BeautifulSoup
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Trade
+from .models import Transaction
+from .utils import convert_date_time_format
+from django.utils import timezone
 
 def login_to_wallstreetsurvivor(username, password):
     session = requests.Session()
@@ -20,8 +22,8 @@ def login_to_wallstreetsurvivor(username, password):
     response = session.post("https://app.wallstreetsurvivor.com/login?returnUrl=/account/dashboardv2", data=login_data)
     
     if response.status_code == 200:
-        # Check if has correct login cookies
         login_cookie = response.cookies.get('__WallStreetSurvivorProd')
+        # Assert if has the correct login cookies
         if login_cookie is None or login_cookie == '':
             raise RuntimeError("Wrong Credentials")
         else: 
@@ -67,15 +69,13 @@ def wallstreetsurvivor_view(request):
         start_date = data.get('start_date')
         end_date = data.get('end_date')
 
-        # Ensure that username and password were send in the body
+        # Verify that both username and password are present in the request body
         if not all([username, password]):
             return JsonResponse({'error': 'Missing one or more required fields.'}, status=400)
-
         try:
             session, cookie = login_to_wallstreetsurvivor(username, password)
         except:
             return JsonResponse({'message': 'Wrong credentials'})
-
 
         params = {
             "pageIndex": PAGE_INDEX,
@@ -90,13 +90,21 @@ def wallstreetsurvivor_view(request):
         get_transactions_response = session.get("https://app.wallstreetsurvivor.com/account/gettransactions", params=params, cookies=cookie)
 
         if get_transactions_response.status_code == 200:
+            # The transaction history page returns the list of transactios as HTML inside a JSON
+            # For successful GET requests, we parse the HTML content, otherwise, we return an error message.
             try:
                 resp_json = json.loads(get_transactions_response.text)
+                html_content = resp_json['Html']
             except:
-                return JsonResponse({'message': 'Response is not Json'})
-            html_content = resp_json['Html']
+                return JsonResponse({"response": "Unable to parse response"})
+
             transaction_data = extract_transaction_data(html_content)
-            return JsonResponse({"response": transaction_data}, json_dumps_params={'indent': 2})
+            Transaction.objects.record_data_collected(transaction_data=transaction_data,username=username)
+            transaction_history = Transaction.objects.get_transactions_within_date_range(
+                convert_date_time_format(start_date),
+                convert_date_time_format(end_date),
+                username)
+            return JsonResponse({"response": transaction_history}, json_dumps_params={'indent': 2})
         else:
             return JsonResponse({'message': f'GET request failed with status code {get_transactions_response.status_code}'})
 
