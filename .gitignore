@@ -1,0 +1,14 @@
+.env/
+dataconnector/dataconnector/.env
+bin/
+lib/
+include/
+pyvenv.cfg
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.sqlite3
+local_settings.py  # If you use this for local development settings
+media/  # Uploaded media files
+static/  # Collected static files
