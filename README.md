@@ -65,7 +65,7 @@ You should receive a response like this:
 }
 ```
 ## Next Steps
-- [ ] Implement functionality for buying and selling stocks. Allow users to specify the stock symbol, quantity, and transaction type (buy or sell).
+- [ ] Implement functionality for buying and selling stocks. Allow users to specify the stock symbol, quantity, and transaction type (buy or sell)
 - [ ] Data analysis capabilities by fetching data from https://app.wallstreetsurvivor.com/portfolio/openposition endpoint and returning profit/loss for each stock in the user's portfolio
 - [ ] Create a user-friendly web interface where users can input their username, password, and other parameters directly on a webpage
 - [ ] This is a small challenge project, but in a real-world scenario, it is important to consider optimizing performance, especially when expecting to handle a large number of requests.
